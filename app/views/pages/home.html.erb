@@ -1,0 +1,26 @@
+<div class="jumbotron">
+    <div class="banner-background">
+        <div class="banner-section container py-5 mb-3">
+            <h1 class="text-center">Welcome to Taibnb!</h1>
+
+            <div class="search-section pt-5">
+                <form action="/search" accept-charset="UTF-8" method="get">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <input type="text" name="search" id="search_place" class="form-control search-home" placeholder="Where are you going?">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="text" name="check_in" id="home_check_in" class="form-control search-home hasDatepicker" placeholder="Start Date" readonly="readonly">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="text" name="check_out" id="home_check_out" class="form-control search-home hasDatepicker" placeholder="End Date" readonly="readonly" disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <%= button_to 'Search', "*", class: 'btn btn-primary' %>
+                    </div>
+                </form>        
+            </div>
+        </div>
+    </div>
+</div>
