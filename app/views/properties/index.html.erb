@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="row">
+        <%= render 'sidemenu' %>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Your Listings</div>
+                <ul class="list-group list-group-flush">
+                    <% @properties.each do |property| %>
+                        <li class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-sm-3">Image</div>
+                                <div class="col-sm-6">
+                                    <%# this property.name should be a link_to to property show page %>
+                                    <%= link_to property.name, property_path(property) %>
+                                </div>
+                                <div class="col-sm-3">
+                                    <%= link_to "Update", listing_property_path(property), class: "btn btn-success" %>
+                                </div>
+                            </div>
+                        </li>
+                    <% end %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

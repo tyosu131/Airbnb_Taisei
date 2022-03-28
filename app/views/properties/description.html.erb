@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="row">
+        <%= render 'sidebar' %>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    Description
+                </div>
+                <div class="card-body">
+                    <%= form_with(model: @property, local: true) do |f| %>
+                        <div class="field">
+                            <%= f.label :name %><br />
+                            <%= f.text_field :name, autocomplete: "name", class:"form-control" %>
+                        </div>
+                        <div class="field">
+                            <%= f.label :description %><br />
+                            <%= f.text_area :description, class:"form-control" %>  
+                        </div>   
+                        <div class="text-center">
+                            <%= f.submit :Save, class: 'btn btn-primary' %>
+                        </div>    
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

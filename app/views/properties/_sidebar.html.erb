@@ -1,0 +1,19 @@
+<div class="col-md-4">
+    <div class="card">
+        <ul class="list-group">
+            <li class="list-group-item"><%= link_to "Listing", listing_property_path(@property) %></li>
+            <li class="list-group-item"><%= link_to "Pricing", pricing_property_path(@property) %></li>
+            <li class="list-group-item"><%= link_to "Description", description_property_path(@property) %></li>
+            <li class="list-group-item"><%= link_to "Images", images_property_path(@property) %></li>
+            <li class="list-group-item"><%= link_to "Amenities", amenities_property_path(@property) %></li>
+            <li class="list-group-item"><%= link_to "Location", location_property_path(@property) %></li>
+            <li class="list-group-item">
+                <%# use the @property variable created in properties_controller %>
+                <%= form_for @property do |f| %>
+                    <%= f.hidden_field :is_active, :value => true %>
+                    <%= f.submit "Publish", class: "btn btn-primary form-control", disabled: !is_complete?(@property) %>
+                <% end %>
+            </li>
+        </ul>
+    </div>
+</div>

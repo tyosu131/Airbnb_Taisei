@@ -7,6 +7,10 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
-  resource :properties
+  resources :properties do
+    member do
+      get 'listing', 'pricing', 'description', 'images', 'amenities', 'location'
+    end
+  end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2022_03_21_121621) do
     t.integer "bedrooms"
     t.integer "bathrooms"
     t.integer "price"
+    t.string "address"
     t.boolean "has_tv", default: false
     t.boolean "has_kitchen", default: false
     t.boolean "has_internet", default: false

@@ -54,3 +54,9 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'devise'
+gem 'activestorage'
+gem 'geocoder', '~> 1.4'
+gem 'ransack', '~> 2.0'
+gem 'faker', '~> 1.6', '>= 1.6.6'
+gem 'will_paginate', '~> 3.2', '>= 3.2.1'
+gem 'will_paginate-bootstrap4', '~> 0.2.2'

@@ -1,0 +1,82 @@
+<div class="container">
+    <div class="main-image mb-5">
+    
+    </div>
+    <div class="row">
+        <div class="col-md-8 mb-5 mb-md-5">
+            <div class="top">
+                <div class="row">
+                    <div class="col-10">
+                        <h2><%= @property.name %></h2>
+                        <p><%= @property.address %></p>
+                    </div>
+                    <div class="col-2 text-center">
+                        <small class="d-block font-italic"><%= @property.user.name %></small>
+                    </div>
+                </div>
+            </div>
+            <Hr>
+            <div class="details text-center">
+                <div class="row">
+                    <div class="col-3">
+                        <i class="fa-solid fa-house"></i>
+                        <p><%= @property.home_type %></p>
+                    </div>
+
+                    <div class="col-3">
+                        <i class="fa-solid fa-user"></i>
+                        <p><%= @property.accommodate %> Guest/s</p>
+                    </div>
+                    
+                    <div class="col-3">
+                        <i class="fa-solid fa-bed"></i>
+                        <p><%= @property.bedrooms %>Bedroom/s</p>
+                    </div>
+                    
+                    <div class="col-3">
+                        <i class="fa-solid fa-bath"></i>
+                        <p><%= @property.bathrooms %>Bathrooms</p>
+                    </div>
+                </div>
+            </div>
+            <Hr>
+            <div class="description">
+                <h3>About this Listing</h3>
+                <p><%= @property.description %></p>
+            </div>
+            <Hr>
+            <div class="amenities">
+                <div class="row">
+                    <div class="col-4">
+                        <h3>Amenities</h3>
+                    </div>
+                    <div class="col-8">
+                        <div class="row">
+                            <div class="col-6"> <%# ↓if shortcut: is asking true or false ? true : false %>
+                                <h5 class="<%= @property.has_tv ? '' : 'text-decorate-line-through' %>">TV</h5>
+                            </div>
+
+                            <div class="col-6">
+                                <h5  class="<%= @property.has_kitchen ? '' : 'text-decorate-line-through' %>">Kitchen</h5>
+                            </div>
+
+                            <div class="col-6">
+                                <h5  class="<%= @property.has_internet ? '' : 'text-decorate-line-through' %>">Internet</h5>
+                            </div>
+
+                            <div class="col-6">
+                                <h5  class="<%= @property.has_heating ? '' : 'text-decorate-line-through' %>">Heating</h5>
+                            </div>
+
+                            <div class="col-6">
+                                <h5  class="<%= @property.has_air_condtion ? '' : 'text-decorate-line-through' %>">Air Condition</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Hr>
+        </div>
+        <%= render 'sidebutton' %>
+    </div> 
+</div>

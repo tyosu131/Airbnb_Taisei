@@ -1,0 +1,41 @@
+<p></p>
+<div class="container">
+    <div class="row">
+        <%= render 'sidebar' %>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header h3">Edit Listing</div>
+                <div class="card-body">
+                    <%= form_with(model: @property, local: true) do |f| %>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label" for="property_home_type">Home type</label>
+                                <%= f.select :home_type, ["Apartment", "House", "Bed & Breakfast"], { include_blank: "Select..." }, { class: "form-control" } %>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="property_room_type">Room type</label>
+                                <%= f.select :room_type, ["Entire", "Private", "Shared"], { include_blank: "Select..." }, { class: "form-control" } %>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="property_accommodate">Accommodate</label>
+                                <%= f.select :accommodate, [["1", "1"], ["2", "2"], ["3", "3"], ["4+", "4"]], { include_blank: 'Select...'}, {class: 'form-control'} %>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="property_bedrooms">Bedrooms</label>
+                                <%= f.select :bedrooms, [["1", "1"], ["2", "2"], ["3", "3"], ["4+", "4"]], { include_blank: 'Select...'}, {class: 'form-control'} %>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="property_bathrooms">Bathrooms</label>
+                                <%= f.select :bathrooms, [["1", "1"], ["2", "2"], ["3", "3"], ["4+", "4"]], { include_blank: 'Select...'}, {class: 'form-control'} %>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="text-center">
+                            <%= f.submit :Save, class: 'btn btn-primary' %>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
