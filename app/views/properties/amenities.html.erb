@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+        <%= render 'sidebar' %>
+        <div class="col-md-8">
+            <div class="card-header">Listing</div>
+            <div class="card-body">
+                <%= form_with(model: @property, local: true) do |f| %>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <%= f.check_box :has_tv %>
+                            <%= f.label :TV %>
+                        </div>
+                        <div class="col-md-4">
+                            <%= f.check_box :has_kitchen %>
+                            <%= f.label :Kitchen %>
+                        </div>
+                        <div class="col-md-4">
+                            <%= f.check_box :has_internet %>
+                            <%= f.label :Internet %>
+                        </div>
+                        <div class="col-md-4">
+                            <%= f.check_box :has_heating %>
+                            <%= f.label :Heating %>
+                        </div>
+                        <div class="col-md-4">
+                            <%= f.check_box :has_air_condtion %>
+                            <%= f.label :Aircon %>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                            <%= f.submit :Save, class: 'btn btn-primary' %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>

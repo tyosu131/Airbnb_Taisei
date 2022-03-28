@@ -1,0 +1,27 @@
+<div class="col-md-4">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between">
+                <span>$<%= @property.price %></span>
+                <span>per nigth</span>
+            </div>
+        </div>
+        <%= form_with(model: @property, local: true) do |f| %>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <%= f.label :Check_in %>
+                        <%= f.date_field :date %>
+                    </div>
+                    <div class="form-group col-12">
+                        <%= f.label :Check_out %>
+                        <%= f.date_field :date %>
+                    </div>
+                    <div class="text-center mx-auto">
+                        <%= f.submit :Book, class: 'btn btn-primary' %>
+                    </div>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>

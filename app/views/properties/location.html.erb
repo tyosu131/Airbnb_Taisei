@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row">
+        <%= render 'sidebar' %>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    Listing
+                </div>
+                <div class="card-body">
+                    <%= form_with(model: @property, local: true) do |f| %>
+                        <%= f.label :address %>
+                        <%= f.text_field :address, class:"form-control" %>
+
+                        <div class="text-center">
+                            <%= f.submit :Save, class: 'btn btn-primary' %>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

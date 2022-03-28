@@ -1,0 +1,10 @@
+<% if flash.any? %>
+    <% flash.each do |type, msg| %>
+        <div class="mt-4 alert alert-<%= type %> alert-dismissable fade show" role="alert">
+            <strong> <%= msg %> </strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <% end %>
+<% end %>
