@@ -7,9 +7,8 @@
                     Upload your Images
                 </div>
                 <div class="card-body">
-                    <%= form_with(model: @property, local: true) do |f| %>
-                        <%= button_to 'ファイル選択',  class: 'btn btn-info' %>
-
+                    <%= form_with(model: @property, local: true, url: property_images_path(@property), method: :post, html: { :multipart => true }) do |f| %>
+                        <%= f.file_field "images[]", multiple: true  %> <%# multiple will allow you to upload many images %> 
                         <div class="text-center">
                             <%= f.submit :Add_Photo, class: 'btn btn-primary' %>
                         </div>

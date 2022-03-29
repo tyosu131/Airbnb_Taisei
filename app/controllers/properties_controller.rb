@@ -73,7 +73,8 @@ class PropertiesController < ApplicationController
       :has_internet,
       :has_heating,
       :has_air_condtion,
-      :is_active
+      :is_active,
+      :images[]
     )
   end
 
