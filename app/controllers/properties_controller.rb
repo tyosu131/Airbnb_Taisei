@@ -48,6 +48,7 @@ class PropertiesController < ApplicationController
   end
 
   def images
+    @images = @property.images
   end
 
   def amenities
