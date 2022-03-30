@@ -48,6 +48,7 @@ class PropertiesController < ApplicationController
   end
 
   def images
+    @images = @property.images
   end
 
   def amenities
@@ -73,8 +74,7 @@ class PropertiesController < ApplicationController
       :has_internet,
       :has_heating,
       :has_air_condtion,
-      :is_active,
-      :images[]
+      :is_active
     )
   end
 

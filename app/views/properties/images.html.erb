@@ -8,11 +8,25 @@
                 </div>
                 <div class="card-body">
                     <%= form_with(model: @property, local: true, url: property_images_path(@property), method: :post, html: { :multipart => true }) do |f| %>
-                        <%= f.file_field "images[]", multiple: true  %> <%# multiple will allow you to upload many images %> 
+                        <%= file_field_tag "images[]", multiple: true  %> <%# multiple will allow you to upload many images %>  <%# multiple will allow you to upload many images %> 
                         <div class="text-center">
                             <%= f.submit :Add_Photo, class: 'btn btn-primary' %>
                         </div>
                     <% end %>
+                    <div class="row mt-3">
+                        <% @images.each do |image| %>
+                            <div class="col-md-4 mb-2">
+                                <div class="card h-100">
+                                    <div class="image-box h-100">
+                                        <%= image_tag(image.img, class: 'w-100 h-100') %><%# display image %>
+                                    </div>
+                                    <div class="card-footer">
+                                        <%= link_to 'delete', property_image_path(@property, image), method: :delete, class: 'btn btn-danger', data: {confirm: "Are you sure?"} %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
                 </div>
             </div>
         </div>
