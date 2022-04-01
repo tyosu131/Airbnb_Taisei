@@ -49,6 +49,7 @@ test:
 #
 production:
   <<: *default
-  database: Airbnb_Taisei_production
-  username: Airbnb_Taisei
-  password: <%= ENV['AIRBNB_TAISEI_DATABASE_PASSWORD'] %>
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
