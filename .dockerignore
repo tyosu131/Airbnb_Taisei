@@ -1,0 +1,13 @@
+.git
+.gitignore
+
+data
+node_modules
+tmp
+log
+storage
+
+.DS_Store
+.byebug_history
+coverage
+vendor/bundle
