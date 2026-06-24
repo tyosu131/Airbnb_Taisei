@@ -1,17 +1,36 @@
 class ImagesController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_property
 
   def create
-    @property = Property.find(params[:property_id])
+    if params[:images].blank?
+      redirect_back(
+        fallback_location: images_property_path(@property),
+        alert: "Please select images."
+      )
+      return
+    end
+
     params[:images].each do |image|
       @property.images.create(img: image)
     end
-    redirect_back(fallback_location: request.referer, notice: "Property Update")
+
+    redirect_back(
+      fallback_location: images_property_path(@property),
+      notice: "Property Update"
+    )
   end
 
   def destroy
-    @property = Property.find(params[:property_id])
     @image = @property.images.find(params[:id])
     @image.destroy
-    redirect_to property_images_path
+
+    redirect_to images_property_path(@property), notice: "Image deleted"
+  end
+
+  private
+
+  def set_property
+    @property = current_user.properties.find(params[:property_id])
   end
 end

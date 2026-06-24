@@ -1,13 +1,14 @@
 class PropertiesController < ApplicationController
   before_action :authenticate_user!
-  before_action :property_id, except: [:new, :create, :index]
-  
+  before_action :set_property, except: [:new, :create, :index]
+
   def new
     @property = current_user.properties.build
   end
 
   def create
     @property = current_user.properties.new(property_params)
+
     if @property.save
       flash[:success] = "Success!"
       redirect_to listing_property_path(@property)
@@ -18,21 +19,19 @@ class PropertiesController < ApplicationController
   end
 
   def edit
-    
   end
 
   def index
-    @properties = Property.all
+    @properties = current_user.properties
   end
 
   def show
   end
 
   def update
-    @property.update(property_params)
-    if @property.save
+    if @property.update(property_params)
       flash[:success] = "Property Update"
-      redirect_back(fallback_location: request.referer)
+      redirect_back(fallback_location: listing_property_path(@property))
     else
       render 'edit'
     end
@@ -58,6 +57,7 @@ class PropertiesController < ApplicationController
   end
 
   private
+
   def property_params
     params.require(:property).permit(
       :home_type,
@@ -78,7 +78,7 @@ class PropertiesController < ApplicationController
     )
   end
 
-  def property_id
+  def set_property
     @property = current_user.properties.find(params[:id])
   end
 end
