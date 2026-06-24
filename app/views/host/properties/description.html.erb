@@ -7,7 +7,7 @@
                     Description
                 </div>
                 <div class="card-body">
-                    <%= form_with(model: @property, local: true) do |f| %>
+                    <%= form_with(model: [:host, @property], local: true) do |f| %>
                         <div class="field">
                             <%= f.label :name %><br />
                             <%= f.text_field :name, autocomplete: "name", class:"form-control" %>

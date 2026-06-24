@@ -1,11 +1,11 @@
-class ImagesController < ApplicationController
+class Host::ImagesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_property
 
   def create
     if params[:images].blank?
       redirect_back(
-        fallback_location: images_property_path(@property),
+        fallback_location: images_host_property_path(@property),
         alert: "Please select images."
       )
       return
@@ -16,7 +16,7 @@ class ImagesController < ApplicationController
     end
 
     redirect_back(
-      fallback_location: images_property_path(@property),
+      fallback_location: images_host_property_path(@property),
       notice: "Property Update"
     )
   end
@@ -25,7 +25,7 @@ class ImagesController < ApplicationController
     @image = @property.images.find(params[:id])
     @image.destroy
 
-    redirect_to images_property_path(@property), notice: "Image deleted"
+    redirect_to images_host_property_path(@property), notice: "Image deleted"
   end
 
   private
