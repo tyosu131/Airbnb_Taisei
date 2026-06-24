@@ -4,7 +4,7 @@
         <div class="col-md-8">
             <div class="card-header">Listing</div>
             <div class="card-body">
-                <%= form_with(model: @property, local: true) do |f| %>
+                <%= form_with(model: [:host, @property], local: true) do |f| %>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <%= f.check_box :has_tv %>

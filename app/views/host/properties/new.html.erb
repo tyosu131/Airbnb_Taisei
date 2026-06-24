@@ -3,7 +3,7 @@
     <div class="card">
         <div class="card-header h3">Create New Listing</div>
         <div class="card-body">
-            <%= form_with(model: @property, local: true) do |f| %>
+            <%= form_with(model: [:host, @property], local: true) do |f| %>
                 <div class="row">
                     <div class="col-md-4">
                         <label class="form-label" for="property_home_type">Home type</label>

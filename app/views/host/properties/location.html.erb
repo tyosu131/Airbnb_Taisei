@@ -7,7 +7,7 @@
                     Listing
                 </div>
                 <div class="card-body">
-                    <%= form_with(model: @property, local: true) do |f| %>
+                    <%= form_with(model: [:host, @property], local: true) do |f| %>
                         <%= f.label :address %>
                         <%= f.text_field :address, class:"form-control" %>
 

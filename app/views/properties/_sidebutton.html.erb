@@ -6,22 +6,15 @@
                 <span>per nigth</span>
             </div>
         </div>
-        <%= form_with(model: @property, local: true) do |f| %>
-            <div class="card-body">
-                <div class="form-row">
-                    <div class="form-group col-12">
-                        <%= f.label :Check_in %>
-                        <%= f.date_field :date %>
-                    </div>
-                    <div class="form-group col-12">
-                        <%= f.label :Check_out %>
-                        <%= f.date_field :date %>
-                    </div>
-                    <div class="text-center mx-auto">
-                        <%= f.submit :Book, class: 'btn btn-primary' %>
-                    </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-12">
+                    <p>Reservation feature is not available yet.</p>
+                </div>
+                <div class="text-center mx-auto">
+                    <button type="button" class="btn btn-primary" disabled>Book</button>
                 </div>
             </div>
-        <% end %>
+        </div>
     </div>
 </div>
