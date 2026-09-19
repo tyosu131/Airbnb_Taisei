@@ -56,7 +56,7 @@ jobs:
         id: brakeman
         if: ${{ always() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
-        run: docker compose run --rm web bundle exec brakeman --no-pager --config-file config/brakeman.yml
+        run: docker compose run --rm web bundle exec brakeman --no-pager
 
       - name: Verify all checks passed
         if: always()
