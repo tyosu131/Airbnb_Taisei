@@ -1,4 +1,6 @@
-FROM ruby:3.0.3
+FROM node:14.21.3-bullseye-slim AS frontend_runtime
+
+FROM ruby:3.3.8-bookworm
 
 ENV LANG=C.UTF-8
 
@@ -7,18 +9,14 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends \
       build-essential \
       default-libmysqlclient-dev \
-      nodejs \
-      curl \
-      ca-certificates \
-      gnupg; \
+      ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
-RUN set -eux; \
-    curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn.gpg; \
-    echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list; \
-    apt-get update -o Acquire::Retries=5 -qq; \
-    apt-get install -y --no-install-recommends yarn; \
-    rm -rf /var/lib/apt/lists/*
+# Webpacker 4 pins node-sass 4, whose last supported Node release is Node 14.
+# Copy the exact legacy runtime (including Yarn Classic) without depending on
+# Bullseye's retired apt repositories. Remove this stage with the frontend
+# modernization rather than silently moving an incompatible native dependency.
+COPY --from=frontend_runtime /usr/local/ /usr/local/
 
 RUN gem install bundler -v 2.3.9
 

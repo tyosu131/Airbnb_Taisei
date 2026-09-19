@@ -29,7 +29,7 @@ jobs:
         run: docker compose run --rm web sh -c 'find app config db test -name "*.rb" -print0 | xargs -0 -n1 ruby -c'
 
       - name: RuboCop lint
-        run: docker compose run --rm web sh -c 'gem install rubocop -v 1.57.2 --no-document && rubocop --lint app config db test'
+        run: docker compose run --rm web bundle exec rubocop --lint app config db test
 
       - name: Boot application and load routes
         run: |
@@ -37,4 +37,4 @@ jobs:
           docker compose run --rm web bundle exec rails routes
 
       - name: Brakeman security scan
-        run: docker compose run --rm web sh -c 'gem install brakeman -v 6.2.2 --no-document && brakeman --no-pager'
+        run: docker compose run --rm web bundle exec brakeman --no-pager
