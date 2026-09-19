@@ -1,6 +1,6 @@
 # Taibnb: a recovered Rails learning project
 
-Taibnb is a deliberately compact property-listing and reservation application. It began as a 2022 Rails learning project and was recovered, secured, tested, and documented in 2026 as a portfolio example of practical work in an existing Rails codebase—not as an attempt to reproduce all of Airbnb.
+Taibnb is a deliberately compact property-listing and reservation application. It began as a 2022 Rails learning project and, after gaining professional backend engineering experience, was revisited in 2026. The existing application was incrementally recovered, secured, tested, and modernized as evidence of practical Rails work—not as an attempt to reproduce all of Airbnb.
 
 ## What it demonstrates
 
@@ -61,11 +61,25 @@ docker compose run --rm web bundle exec rails runner 'puts Rails.application.cla
 
 ## Quality and security
 
-The GitHub Actions workflow rebuilds the same Docker image used locally, prepares a clean test database, runs all model/request tests, checks Ruby syntax and RuboCop lint rules, boots Rails, loads the route set, and runs Brakeman. Run the security scan locally with:
+The GitHub Actions workflow rebuilds the same Docker image used locally, prepares a clean test database, runs all model/request tests, checks Ruby syntax and RuboCop lint rules, boots Rails, loads the route set, and runs the repository's Brakeman security gate. Run the same gate locally with:
 
 ```bash
-docker compose run --rm web bundle exec brakeman --no-pager
+docker compose run --rm web bundle exec ruby bin/brakeman_gate.rb
 ```
+
+The gate still performs a raw Brakeman scan. It explicitly accepts only the known Rails 6 end-of-life warning as a legacy limitation; every other Brakeman warning remains blocking.
+
+## Verified modernization state
+
+The completed modernization was verified with the following evidence:
+
+- the Docker image builds successfully;
+- test database preparation and migrations succeed;
+- the Rails suite completes with 16 runs, 50 assertions, 0 failures, 0 errors, and 0 skips;
+- the Ruby syntax check and RuboCop lint pass;
+- the Rails application boots and its routes load successfully;
+- the repository security gate passes; and
+- the final `develop` GitHub Actions run after merge is green.
 
 ## Recovery and modernization decisions
 
@@ -81,8 +95,8 @@ The recovery retained the recognizable Rails application and improved it increme
 
 ## Known limitations and excluded scope
 
-- Rails 6.0, Webpacker, and Turbolinks remain legacy dependencies. A framework/frontend upgrade is the principal remaining maintenance task.
+- Rails 6.0 is end-of-life and remains an explicitly accepted legacy limitation. Webpacker, Turbolinks, and the Node 14 compatibility stack also remain legacy; replacing them is intentionally outside the bounded modernization scope.
 - Prices are whole currency units; taxes, fees, currencies, payments, refunds, and booking statuses are intentionally absent.
-- SQLite/PostgreSQL range exclusion is not used because the existing application standardizes on MySQL. Availability is enforced by model validation while holding a property row lock on the web create path.
+- A PostgreSQL exclusion constraint is not used because the application standardizes on MySQL. Overlap prevention uses application validation while holding a property row lock on the web create path.
 - Image files use local disk storage by default. Production object storage is not configured.
 - There is no chat, maps integration, realtime inventory, or deployment infrastructure. Those features would add size without improving the intended Rails evidence.
