@@ -9,21 +9,25 @@ class HostImagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a host cannot add images to another host's property" do
-    assert_no_difference "Image.count" do
+    image_count = Image.count
+
+    assert_raises(ActiveRecord::RecordNotFound) do
       post host_property_images_path(@property), params: { images: ["untrusted upload"] }
     end
 
-    assert_response :not_found
+    assert_equal image_count, Image.count
   end
 
   test "a host cannot delete images from another host's property" do
     image = @property.images.create!
 
-    assert_no_difference "Image.count" do
+    image_count = Image.count
+
+    assert_raises(ActiveRecord::RecordNotFound) do
       delete host_property_image_path(@property, image)
     end
 
-    assert_response :not_found
+    assert_equal image_count, Image.count
     assert Image.exists?(image.id)
   end
 end

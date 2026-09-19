@@ -43,7 +43,12 @@ group :development do
 end
 
 # Use the same database adapter in every environment.
-gem 'mysql2', '>= 0.4.4'
+gem 'mysql2', '~> 0.5.7'
+
+# Mail 2.7/Rails 6 require these protocols from Ruby's externalized stdlib gems.
+gem 'net-imap'
+gem 'net-pop'
+gem 'net-smtp'
 
 group :test do
   # Adds support for Capybara system testing and selenium driver

@@ -17,8 +17,9 @@ RUN set -eux; \
 # Bullseye's retired apt repositories. Remove this stage with the frontend
 # modernization rather than silently moving an incompatible native dependency.
 COPY --from=frontend_runtime /usr/local/ /usr/local/
+COPY --from=frontend_runtime /opt/yarn-v1.22.19/ /opt/yarn-v1.22.19/
 
-RUN gem install bundler -v 2.3.9
+RUN gem install bundler -v 2.5.22
 
 WORKDIR /tmp
 COPY Gemfile Gemfile
@@ -31,6 +32,7 @@ WORKDIR $APP_HOME
 
 COPY . $APP_HOME
 
+RUN node --version && yarn --version
 RUN yarn install --check-files
 
 COPY entrypoint.sh /usr/bin/
