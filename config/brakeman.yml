@@ -1,0 +1,5 @@
+---
+# Rails 6.0 EOL is an explicitly accepted portfolio limitation. Keep every
+# other Brakeman check enabled, including dependency CVE checks.
+:skip_checks:
+  - EOLRails

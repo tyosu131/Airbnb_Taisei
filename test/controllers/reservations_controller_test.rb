@@ -48,8 +48,11 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     )
     sign_in create_user(email: "stranger@example.com")
 
-    assert_no_difference("Reservation.count") { delete reservation_path(reservation) }
-    assert_response :not_found
+    reservation_count = Reservation.count
+
+    assert_raises(ActiveRecord::RecordNotFound) { delete reservation_path(reservation) }
+    assert_equal reservation_count, Reservation.count
+    assert Reservation.exists?(reservation.id)
   end
 
   private

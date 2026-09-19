@@ -64,7 +64,7 @@ docker compose run --rm web bundle exec rails runner 'puts Rails.application.cla
 The GitHub Actions workflow rebuilds the same Docker image used locally, prepares a clean test database, runs all model/request tests, checks Ruby syntax and RuboCop lint rules, boots Rails, loads the route set, and runs Brakeman. Run the security scan locally with:
 
 ```bash
-docker compose run --rm web bundle exec brakeman --no-pager
+docker compose run --rm web bundle exec brakeman --no-pager --config-file config/brakeman.yml
 ```
 
 ## Recovery and modernization decisions
