@@ -43,7 +43,7 @@ group :development do
 end
 
 # Use the same database adapter in every environment.
-gem 'mysql2', '>= 0.4.4'
+gem 'mysql2', '~> 0.5.7'
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
