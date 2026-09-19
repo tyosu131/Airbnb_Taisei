@@ -1,6 +1,7 @@
 class Property < ApplicationRecord
   belongs_to :user
   has_many :images, dependent: :destroy
+  has_many :reservations, dependent: :restrict_with_error
 
   validates :user,
             :home_type,
@@ -10,6 +11,8 @@ class Property < ApplicationRecord
             :bathrooms,
             presence: true
   validates :price, numericality: { greater_than: 0 }, allow_nil: true
+  validates :accommodate, :bedrooms, :bathrooms,
+            numericality: { only_integer: true, greater_than: 0 }
   validates :name, :description, :address, presence: true, if: :is_active?
   validate :active_listing_must_be_complete
 

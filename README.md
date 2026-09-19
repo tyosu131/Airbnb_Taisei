@@ -1,97 +1,88 @@
-# Airbnb_Taisei
+# Taibnb: a recovered Rails learning project
 
-Rails 6 based Airbnb-style application.
+Taibnb is a deliberately compact property-listing and reservation application. It began as a 2022 Rails learning project and was recovered, secured, tested, and documented in 2026 as a portfolio example of practical work in an existing Rails codebase—not as an attempt to reproduce all of Airbnb.
 
-This repository is currently being modernized from an older learning project into a portfolio-grade Rails application. The first recovery step is to make the application boot reproducibly with Docker on Apple Silicon.
+## What it demonstrates
 
-## Tech Stack
+- Devise registration, sessions, password recovery, and authenticated routes.
+- Public browsing of published properties, with host-only listing and image management.
+- Active Record associations across `User`, `Property`, `Image`, and `Reservation`.
+- Draft-versus-published property validation and validated Active Storage image types.
+- Reservation rules for future dates, positive stay lengths, host/guest separation, derived prices, and non-overlapping stays.
+- Ownership-based authorization using records scoped through `current_user` rather than trusting submitted IDs.
+- Database foreign keys, non-null columns, and indexes that support the model invariants and availability query.
+- Focused model and request tests, plus Docker-based CI and a Brakeman scan.
 
-- Ruby 3.0.3
-- Rails 6.0.4.7
-- MySQL 5.7
-- Devise
-- Active Storage
-- Webpacker
-- Docker Compose
+## Domain model
 
-## Local Development with Docker
+```text
+User (host) 1 ─── * Property 1 ─── * Image
+     (guest) 1 ─── * Reservation * ─── 1 Property
+```
 
-### Prerequisites
+A property may remain an incomplete draft, but it cannot be published until its public fields and a positive nightly price are present. A reservation treats checkout as an exclusive boundary, so one guest may check in on another guest's checkout date. Its total is always recalculated as `nights × property.price`; the controller does not permit a client-supplied guest or price.
 
-- Docker Desktop
-- Git
+The create path locks the property while checking and inserting a reservation. That keeps the simple overlap validation useful under concurrent requests without introducing a larger booking architecture. It is appropriate for this project's scope; a high-volume system would use a database-native range exclusion constraint or a dedicated inventory model.
 
-For Apple Silicon Macs, the current Docker setup runs both the Rails app and MySQL as linux/amd64 because the legacy MySQL 5.7 and old frontend dependencies are not arm64-friendly.
+## Stack
 
-### Start the application
+- Ruby 3.3.8 and Rails 6.0.4.7
+- MySQL 8.0
+- Devise and Active Storage
+- Webpacker/Turbolinks with Bootstrap 4
+- Minitest request and model tests
+- Docker Compose and GitHub Actions
 
-Run:
+The Rails/frontend versions are intentionally recorded rather than presented as current. Ruby uses the supported 3.3 series on Debian Bookworm so OS packages no longer depend on Bullseye's retired repositories. Webpacker 4 still pins node-sass 4, so the image copies the exact Node 14/Yarn Classic runtime from its official image instead of installing packages from archived apt mirrors. Node 14 is also end-of-life; this explicit compatibility stage is a short-term maintenance trade-off, not a claim that the frontend is current. Moving the application to a supported Rails/frontend toolchain is deliberately outside this focused recovery. Compose targets `linux/amd64` because this node-sass release has no native arm64 build, so Docker Desktop uses emulation on Apple Silicon until that stack is replaced.
 
-    docker compose up --build
+## Run locally with Docker
 
-The Rails app is exposed at:
+Prerequisites: Docker Desktop (or Docker Engine with Compose) and Git.
 
-    http://localhost:3002
+```bash
+git clone https://github.com/tyosu131/Airbnb_Taisei.git
+cd Airbnb_Taisei
+docker compose build web
+docker compose run --rm web bundle exec rails db:prepare
+docker compose up
+```
 
-### Initial database setup
+Open <http://localhost:3002>. The database data is stored under the ignored `data/` directory. Compose waits for MySQL's health check before starting one-off web commands.
+All environments use the MySQL adapter; production expects a MySQL `DATABASE_URL`.
 
-In another terminal, run:
+Run the suite and inspect the application:
 
-    docker compose exec web rails db:create db:migrate
+```bash
+docker compose run --rm -e RAILS_ENV=test web bundle exec rails db:prepare
+docker compose run --rm -e RAILS_ENV=test web bundle exec rails test
+docker compose run --rm web bundle exec rails routes
+docker compose run --rm web bundle exec rails runner 'puts Rails.application.class.name'
+```
 
-If exec fails because the container is not running, use:
+## Quality and security
 
-    docker compose run --rm web rails db:create db:migrate
+The GitHub Actions workflow rebuilds the same Docker image used locally, prepares a clean test database, runs all model/request tests, checks Ruby syntax and RuboCop lint rules, boots Rails, loads the route set, and runs Brakeman. Run the security scan locally with:
 
-Then open:
+```bash
+docker compose run --rm web bundle exec brakeman --no-pager
+```
 
-    http://localhost:3002
+## Recovery and modernization decisions
 
-### Stop containers
+The recovery retained the recognizable Rails application and improved it incrementally:
 
-Run:
+- separated public property browsing from the authenticated `Host` namespace;
+- scopes property and image mutations through the signed-in host;
+- corrected the legacy `has_air_condtion` database column via migration;
+- moved Docker from end-of-life MySQL 5.7 to MySQL 8.0 and added readiness checks;
+- added missing foreign keys, type-compatible references, non-null constraints, and query indexes;
+- added the reservation domain and tests around plausible security and business-rule regressions;
+- expanded CI beyond syntax checks into a meaningful test and security gate.
 
-    docker compose down
+## Known limitations and excluded scope
 
-## Current Docker Notes
-
-The Docker setup includes:
-
-- platform linux/amd64 for MySQL 5.7 on Apple Silicon
-- platform linux/amd64 for the Rails web container to avoid old node-sass arm64 build failures
-- Bundler 2.3.9 to match Gemfile.lock
-- Yarn installed through a keyring-based apt source instead of deprecated apt-key
-- A named node_modules volume so the bind mount does not hide container-installed frontend packages
-- .dockerignore to keep local data and dependencies out of Docker build context
-
-## Known Local Issues
-
-Docker Desktop may crash on some Apple Silicon environments due to Docker Desktop / virtualization.framework issues. If that happens after a successful build and boot, restart Docker Desktop or reboot macOS.
-
-The current Docker setup is a recovery step, not the final production architecture. Later modernization work should consider:
-
-- Replacing MySQL 5.7
-- Moving to PostgreSQL or a supported MySQL version
-- Upgrading Ruby and Rails
-- Replacing legacy Webpacker / node-sass dependencies
-- Adding CI, tests, and security checks
-
-## Verified Recovery Status
-
-The following has been verified locally:
-
-- Docker image builds successfully
-- Rails boots in development
-- MySQL container starts
-- rails db:create db:migrate completes
-- Top page renders at http://localhost:3002
-
-## Next Modernization Targets
-
-- Clean up routes
-- Fix authorization around property and image management
-- Separate public property browsing from host listing management
-- Add model validations and database constraints
-- Add reservation domain model
-- Add CI and security checks
-- Upgrade Ruby / Rails in controlled steps
+- Rails 6.0, Webpacker, and Turbolinks remain legacy dependencies. A framework/frontend upgrade is the principal remaining maintenance task.
+- Prices are whole currency units; taxes, fees, currencies, payments, refunds, and booking statuses are intentionally absent.
+- SQLite/PostgreSQL range exclusion is not used because the existing application standardizes on MySQL. Availability is enforced by model validation while holding a property row lock on the web create path.
+- Image files use local disk storage by default. Production object storage is not configured.
+- There is no chat, maps integration, realtime inventory, or deployment infrastructure. Those features would add size without improving the intended Rails evidence.

@@ -7,7 +7,10 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
-  resources :properties, only: [:index, :show]
+  resources :properties, only: [:index, :show] do
+    resources :reservations, only: :create, shallow: true
+  end
+  resources :reservations, only: [:index, :destroy]
 
   namespace :host do
     resources :properties do
