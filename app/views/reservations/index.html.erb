@@ -1,0 +1,21 @@
+<div class="container">
+  <h2>Your trips and bookings</h2>
+  <% if @reservations.empty? %>
+    <p>You do not have any reservations yet.</p>
+  <% else %>
+    <ul class="list-group">
+      <% @reservations.each do |reservation| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>
+            <strong><%= reservation.property.name %></strong><br>
+            Guest: <%= reservation.guest.name.presence || reservation.guest.email %><br>
+            <%= reservation.check_in %> – <%= reservation.check_out %>
+            (<%= pluralize(reservation.nights, "night") %>) · $<%= reservation.total_price %>
+          </span>
+          <%= link_to "Cancel", reservation_path(reservation), method: :delete,
+                      data: { confirm: "Cancel this reservation?" }, class: "btn btn-outline-danger" %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

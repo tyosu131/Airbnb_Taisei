@@ -8,8 +8,8 @@ on:
       - develop
 
 jobs:
-  docker-checks:
-    name: Docker checks
+  test-and-security:
+    name: Test and security
     runs-on: ubuntu-latest
 
     steps:
@@ -19,12 +19,22 @@ jobs:
       - name: Build web image
         run: docker compose build web
 
-      - name: Ruby syntax checks
-        run: |
-          docker compose run --rm web ruby -c config/routes.rb
-          docker compose run --rm web ruby -c app/controllers/properties_controller.rb
-          docker compose run --rm web ruby -c app/controllers/host/properties_controller.rb
-          docker compose run --rm web ruby -c app/controllers/host/images_controller.rb
+      - name: Prepare test database
+        run: docker compose run --rm -e RAILS_ENV=test web bundle exec rails db:prepare
 
-      - name: Rails routes check
-        run: docker compose run --rm web bundle exec rails routes
+      - name: Run tests
+        run: docker compose run --rm -e RAILS_ENV=test web bundle exec rails test
+
+      - name: Ruby syntax check
+        run: docker compose run --rm web sh -c 'find app config db test -name "*.rb" -print0 | xargs -0 -n1 ruby -c'
+
+      - name: RuboCop lint
+        run: docker compose run --rm web sh -c 'gem install rubocop -v 1.57.2 --no-document && rubocop --lint app config db test'
+
+      - name: Boot application and load routes
+        run: |
+          docker compose run --rm -e RAILS_ENV=test web bundle exec rails runner 'puts Rails.application.class.name'
+          docker compose run --rm web bundle exec rails routes
+
+      - name: Brakeman security scan
+        run: docker compose run --rm web sh -c 'gem install brakeman -v 6.2.2 --no-document && brakeman --no-pager'

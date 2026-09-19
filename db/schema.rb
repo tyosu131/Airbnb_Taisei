@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_29_134118) do
+ActiveRecord::Schema.define(version: 2026_09_19_000100) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -34,30 +34,46 @@ ActiveRecord::Schema.define(version: 2022_03_29_134118) do
   end
 
   create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "property_id"
+    t.bigint "property_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["property_id"], name: "index_images_on_property_id"
   end
 
   create_table "properties", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id", null: false
     t.string "name"
     t.string "description"
-    t.string "home_type"
-    t.string "room_type"
-    t.integer "accommodate"
-    t.integer "bedrooms"
-    t.integer "bathrooms"
+    t.string "home_type", null: false
+    t.string "room_type", null: false
+    t.integer "accommodate", null: false
+    t.integer "bedrooms", null: false
+    t.integer "bathrooms", null: false
     t.integer "price"
     t.string "address"
     t.boolean "has_tv", default: false
     t.boolean "has_kitchen", default: false
     t.boolean "has_internet", default: false
     t.boolean "has_heating", default: false
-    t.boolean "has_air_condtion", default: false
+    t.boolean "has_air_conditioning", default: false
     t.boolean "is_active", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["is_active"], name: "index_properties_on_is_active"
+    t.index ["user_id"], name: "index_properties_on_user_id"
+  end
+
+  create_table "reservations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "guest_id", null: false
+    t.bigint "property_id", null: false
+    t.date "check_in", null: false
+    t.date "check_out", null: false
+    t.integer "total_price", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["guest_id"], name: "index_reservations_on_guest_id"
+    t.index ["property_id", "check_in", "check_out"], name: "index_reservations_on_property_and_dates"
+    t.index ["property_id"], name: "index_reservations_on_property_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -76,4 +92,8 @@ ActiveRecord::Schema.define(version: 2022_03_29_134118) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "images", "properties"
+  add_foreign_key "properties", "users"
+  add_foreign_key "reservations", "properties"
+  add_foreign_key "reservations", "users", column: "guest_id"
 end

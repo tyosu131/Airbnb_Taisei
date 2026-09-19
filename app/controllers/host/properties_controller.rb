@@ -74,7 +74,7 @@ class Host::PropertiesController < ApplicationController
       :has_kitchen,
       :has_internet,
       :has_heating,
-      :has_air_condtion,
+      :has_air_conditioning,
       :is_active
     )
   end

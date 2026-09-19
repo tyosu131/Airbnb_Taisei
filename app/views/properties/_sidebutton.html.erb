@@ -7,14 +7,17 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="form-row">
-                <div class="form-group col-12">
-                    <p>Reservation feature is not available yet.</p>
+            <%= form_with model: [@property, Reservation.new], local: true do |form| %>
+                <div class="form-group">
+                    <%= form.label :check_in %>
+                    <%= form.date_field :check_in, min: Date.current, required: true, class: "form-control" %>
                 </div>
-                <div class="text-center mx-auto">
-                    <button type="button" class="btn btn-primary" disabled>Book</button>
+                <div class="form-group">
+                    <%= form.label :check_out %>
+                    <%= form.date_field :check_out, min: Date.current + 1.day, required: true, class: "form-control" %>
                 </div>
-            </div>
+                <%= form.submit "Book", class: "btn btn-primary" %>
+            <% end %>
         </div>
     </div>
 </div>
