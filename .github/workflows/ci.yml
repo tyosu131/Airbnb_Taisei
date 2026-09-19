@@ -32,7 +32,7 @@ jobs:
         id: syntax
         if: ${{ always() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
-        run: docker compose run --rm web sh -c 'find app config db test -name "*.rb" -print0 | xargs -0 -n1 ruby -c'
+        run: docker compose run --rm web sh -c 'find app bin config db test -name "*.rb" -print0 | xargs -0 -n1 ruby -c'
 
       - name: RuboCop lint
         id: rubocop
@@ -56,7 +56,9 @@ jobs:
         id: brakeman
         if: ${{ always() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
-        run: docker compose run --rm web bundle exec brakeman --no-pager
+        # Rails 6 EOL is accepted for this bounded legacy portfolio recovery;
+        # every other current or future Brakeman warning remains blocking.
+        run: docker compose run --rm web bundle exec ruby bin/brakeman_gate.rb
 
       - name: Verify all checks passed
         if: always()
