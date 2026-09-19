@@ -1,6 +1,6 @@
 class StrengthenPropertyData < ActiveRecord::Migration[6.0]
   def up
-    remove_orphaned_rows
+    ensure_constraint_ready_data!
     rename_column :properties, :has_air_condtion, :has_air_conditioning
 
     change_column :properties, :user_id, :bigint
@@ -22,23 +22,35 @@ class StrengthenPropertyData < ActiveRecord::Migration[6.0]
   end
 
   def down
-    remove_foreign_key :images, :properties
-    remove_foreign_key :properties, :users
-    remove_index :images, :property_id
-    remove_index :properties, :is_active
-    remove_index :properties, :user_id
-    rename_column :properties, :has_air_conditioning, :has_air_condtion
+    raise ActiveRecord::IrreversibleMigration,
+          "reference type and nullability changes cannot be safely reversed"
   end
 
   private
 
-  def remove_orphaned_rows
-    execute "DELETE FROM images WHERE property_id IS NULL OR property_id NOT IN (SELECT id FROM properties)"
-    execute "DELETE FROM properties WHERE user_id IS NULL OR user_id NOT IN (SELECT id FROM users)"
-    execute "UPDATE properties SET home_type = 'Unspecified' WHERE home_type IS NULL"
-    execute "UPDATE properties SET room_type = 'Unspecified' WHERE room_type IS NULL"
-    execute "UPDATE properties SET accommodate = 1 WHERE accommodate IS NULL OR accommodate < 1"
-    execute "UPDATE properties SET bedrooms = 1 WHERE bedrooms IS NULL OR bedrooms < 1"
-    execute "UPDATE properties SET bathrooms = 1 WHERE bathrooms IS NULL OR bathrooms < 1"
+  def ensure_constraint_ready_data!
+    invalid_counts = {
+      properties_without_users: select_value(<<~SQL).to_i,
+        SELECT COUNT(*) FROM properties
+        LEFT JOIN users ON users.id = properties.user_id
+        WHERE properties.user_id IS NULL OR users.id IS NULL
+      SQL
+      images_without_properties: select_value(<<~SQL).to_i,
+        SELECT COUNT(*) FROM images
+        LEFT JOIN properties ON properties.id = images.property_id
+        WHERE images.property_id IS NULL OR properties.id IS NULL
+      SQL
+      incomplete_properties: select_value(<<~SQL).to_i
+        SELECT COUNT(*) FROM properties
+        WHERE home_type IS NULL OR room_type IS NULL OR accommodate IS NULL
+          OR bedrooms IS NULL OR bathrooms IS NULL
+      SQL
+    }.reject { |_name, count| count.zero? }
+
+    return if invalid_counts.empty?
+
+    details = invalid_counts.map { |name, count| "#{name}=#{count}" }.join(", ")
+    raise StandardError,
+          "Cannot strengthen property constraints; repair invalid data first (#{details})"
   end
 end

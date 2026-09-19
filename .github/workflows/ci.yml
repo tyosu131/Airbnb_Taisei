@@ -20,21 +20,63 @@ jobs:
         run: docker compose build web
 
       - name: Prepare test database
+        id: prepare
         run: docker compose run --rm -e RAILS_ENV=test web bundle exec rails db:prepare
 
       - name: Run tests
+        id: tests
+        continue-on-error: true
         run: docker compose run --rm -e RAILS_ENV=test web bundle exec rails test
 
       - name: Ruby syntax check
-        run: docker compose run --rm web sh -c 'find app config db test -name "*.rb" -print0 | xargs -0 -n1 ruby -c'
+        id: syntax
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        run: docker compose run --rm web sh -c 'find app bin config db test -name "*.rb" -print0 | xargs -0 -n1 ruby -c'
 
       - name: RuboCop lint
-        run: docker compose run --rm web sh -c 'gem install rubocop -v 1.57.2 --no-document && rubocop --lint app config db test'
+        id: rubocop
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        run: docker compose run --rm web bundle exec rubocop --lint app config db test
 
-      - name: Boot application and load routes
-        run: |
-          docker compose run --rm -e RAILS_ENV=test web bundle exec rails runner 'puts Rails.application.class.name'
-          docker compose run --rm web bundle exec rails routes
+      - name: Boot application
+        id: boot
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        run: docker compose run --rm -e RAILS_ENV=test web bundle exec rails runner 'puts Rails.application.class.name'
+
+      - name: Load routes
+        id: routes
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        run: docker compose run --rm web bundle exec rails routes
 
       - name: Brakeman security scan
-        run: docker compose run --rm web sh -c 'gem install brakeman -v 6.2.2 --no-document && brakeman --no-pager'
+        id: brakeman
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        # Rails 6 EOL is accepted for this bounded legacy portfolio recovery;
+        # every other current or future Brakeman warning remains blocking.
+        run: docker compose run --rm web bundle exec ruby bin/brakeman_gate.rb
+
+      - name: Verify all checks passed
+        if: always()
+        env:
+          TESTS_OUTCOME: ${{ steps.tests.outcome }}
+          SYNTAX_OUTCOME: ${{ steps.syntax.outcome }}
+          RUBOCOP_OUTCOME: ${{ steps.rubocop.outcome }}
+          BOOT_OUTCOME: ${{ steps.boot.outcome }}
+          ROUTES_OUTCOME: ${{ steps.routes.outcome }}
+          BRAKEMAN_OUTCOME: ${{ steps.brakeman.outcome }}
+        run: |
+          failed=0
+          for check in TESTS SYNTAX RUBOCOP BOOT ROUTES BRAKEMAN; do
+            outcome_variable="${check}_OUTCOME"
+            outcome="${!outcome_variable}"
+            printf '%s: %s\n' "$check" "$outcome"
+            if [ "$outcome" != "success" ]; then
+              failed=1
+            fi
+          done
+          exit "$failed"

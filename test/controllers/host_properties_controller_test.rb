@@ -13,9 +13,10 @@ class HostPropertiesControllerTest < ActionDispatch::IntegrationTest
     property = create_property(user: owner)
     sign_in intruder
 
-    patch host_property_path(property), params: { property: { name: "Taken over" } }
+    assert_raises(ActiveRecord::RecordNotFound) do
+      patch host_property_path(property), params: { property: { name: "Taken over" } }
+    end
 
-    assert_response :not_found
     assert_equal "Quiet apartment", property.reload.name
   end
 end

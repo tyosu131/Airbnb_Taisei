@@ -26,14 +26,14 @@ The create path locks the property while checking and inserting a reservation. T
 
 ## Stack
 
-- Ruby 3.0.3 and Rails 6.0.4.7
+- Ruby 3.3.8 and Rails 6.0.4.7
 - MySQL 8.0
 - Devise and Active Storage
 - Webpacker/Turbolinks with Bootstrap 4
 - Minitest request and model tests
 - Docker Compose and GitHub Actions
 
-The Ruby/Rails/frontend versions are intentionally recorded rather than presented as current. Moving directly from this legacy application to a currently supported Rails line also requires replacing Webpacker and resolving dependency changes. That larger upgrade was kept outside this focused recovery so the domain, authorization, constraints, and tests remain reviewable and working together.
+The Rails/frontend versions are intentionally recorded rather than presented as current. Ruby uses the supported 3.3 series on Debian Bookworm so OS packages no longer depend on Bullseye's retired repositories. Webpacker 4 still pins node-sass 4, so the image copies the exact Node 14/Yarn Classic runtime from its official image instead of installing packages from archived apt mirrors. Node 14 is also end-of-life; this explicit compatibility stage is a short-term maintenance trade-off, not a claim that the frontend is current. Moving the application to a supported Rails/frontend toolchain is deliberately outside this focused recovery. Compose targets `linux/amd64` because this node-sass release has no native arm64 build, so Docker Desktop uses emulation on Apple Silicon until that stack is replaced.
 
 ## Run locally with Docker
 
@@ -48,6 +48,7 @@ docker compose up
 ```
 
 Open <http://localhost:3002>. The database data is stored under the ignored `data/` directory. Compose waits for MySQL's health check before starting one-off web commands.
+All environments use the MySQL adapter; production expects a MySQL `DATABASE_URL`.
 
 Run the suite and inspect the application:
 
@@ -63,8 +64,7 @@ docker compose run --rm web bundle exec rails runner 'puts Rails.application.cla
 The GitHub Actions workflow rebuilds the same Docker image used locally, prepares a clean test database, runs all model/request tests, checks Ruby syntax and RuboCop lint rules, boots Rails, loads the route set, and runs Brakeman. Run the security scan locally with:
 
 ```bash
-docker compose run --rm web sh -c \
-  'gem install brakeman -v 6.2.2 --no-document && brakeman --no-pager'
+docker compose run --rm web bundle exec brakeman --no-pager
 ```
 
 ## Recovery and modernization decisions
@@ -81,7 +81,7 @@ The recovery retained the recognizable Rails application and improved it increme
 
 ## Known limitations and excluded scope
 
-- Ruby 3.0, Rails 6.0, Webpacker, and Turbolinks remain legacy dependencies. A framework/frontend upgrade is the principal remaining maintenance task.
+- Rails 6.0, Webpacker, and Turbolinks remain legacy dependencies. A framework/frontend upgrade is the principal remaining maintenance task.
 - Prices are whole currency units; taxes, fees, currencies, payments, refunds, and booking statuses are intentionally absent.
 - SQLite/PostgreSQL range exclusion is not used because the existing application standardizes on MySQL. Availability is enforced by model validation while holding a property row lock on the web create path.
 - Image files use local disk storage by default. Production object storage is not configured.
